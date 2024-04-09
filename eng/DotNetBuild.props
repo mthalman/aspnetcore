@@ -32,13 +32,15 @@
       <_AdditionalRepoTaskBuildArgs />
       <_AdditionalRepoTaskBuildArgs Condition="'$(DotNetRuntimeSourceFeed)' != ''" >$(_AdditionalRepoTaskBuildArgs) --runtimesourcefeed $(DotNetRuntimeSourceFeed)</_AdditionalRepoTaskBuildArgs>
       <_AdditionalRepoTaskBuildArgs Condition="'$(DotNetRuntimeSourceFeedKey)' != ''" >$(_AdditionalRepoTaskBuildArgs) --runtimesourcefeedkey $(DotNetRuntimeSourceFeedKey)</_AdditionalRepoTaskBuildArgs>
-      <_AdditionalRepoTaskBuildArgs Condition="'$(RestoreConfigFile)' != ''" >$(_AdditionalRepoTaskBuildArgs) /p:RestoreConfigFile=$(RestoreConfigFile)</_AdditionalRepoTaskBuildArgs>
     </PropertyGroup>
 
     <ItemGroup>
       <!-- We need to flow FullAssemblySigningSupported even when building repo tasks because they use full signing -->
       <InnerBuildEnv Condition="'$(FullAssemblySigningSupported)' != ''" Include="FullAssemblySigningSupported=$(FullAssemblySigningSupported)" />
       <InnerBuildEnv Include="DotNetBuildSourceOnly=$(DotNetBuildSourceOnly)" />
+      <!-- Pass RestoreConfigFile through as an environment variable because the aspnetcore build scripts do not
+           pass through arbitrary msbuild properties to the repo tasks build command -->
+      <InnerBuildEnv Condition="'$(RestoreConfigFile)' != ''" Include="RestoreConfigFile=$(RestoreConfigFile)" />
     </ItemGroup>
 
     <!-- Call the build.sh script to build the repo tasks. Set IgnoreStandardErrorWarningFormat
